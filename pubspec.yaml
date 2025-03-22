@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_inappwebview: ^6.1.5
   flutter_native_splash: ^2.4.4
+  loading_animation_widget: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -112,7 +113,7 @@ flutter_native_splash:
 
   # The image parameter allows you to specify an image used in the splash screen.  It must be a
   # png file and should be sized for 4x pixel density.
-  image: assets/app_logo.png
+  image: assets/launch_logo.png
 
   # The branding property allows you to specify an image used as branding in the splash screen.
   # It must be a png file. It is supported for Android, iOS and the Web.  For Android 12,
@@ -130,7 +131,7 @@ flutter_native_splash:
   # color_dark and background_image_dark cannot both be set.
   color_dark: "#ffffff"
   #background_image_dark: "assets/dark-background.png"
-  image_dark: assets/app_logo.png
+  image_dark: assets/launch_logo.png
   #branding_dark: assets/dart_dark.png
 
   # Android 12 handles the splash screen differently than previous versions.  Please visit
@@ -144,7 +145,7 @@ flutter_native_splash:
     # 640 pixels in diameter.
     # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
     # 768 pixels in diameter.
-    image: assets/app_logo.png
+    image: assets/launch_logo.png
 
     # Splash screen background color.
     color: "#ffffff"
