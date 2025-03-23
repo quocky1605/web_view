@@ -98,158 +98,161 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Container(
-              color: const Color(0xffFAFAFA),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 10,
-                    ),
-                    child: Image.asset(
-                      'assets/logo.png',
-                      height: 50,
+            InAppWebView(
+              key: webViewKey,
+              initialUrlRequest: URLRequest(
+                url: WebUri(
+                  'https://shop.yofastpos.com/collections/mrs-pho-house/',
+                ),
+              ),
+              initialUserScripts: UnmodifiableListView<UserScript>([]),
+              initialSettings: settings,
+              pullToRefreshController: pullToRefreshController,
+              onWebViewCreated: (controller) async {
+                webViewController = controller;
+                setState(() {
+                  isLoading = true;
+                });
+              },
+              onLoadStart: (controller, url) async {
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                  isLoading = true;
+                });
+              },
+              onPermissionRequest: (controller, request) async {
+                return PermissionResponse(
+                    resources: request.resources,
+                    action: PermissionResponseAction.GRANT);
+              },
+              shouldOverrideUrlLoading: (controller, navigationAction) async {
+                return NavigationActionPolicy.ALLOW;
+              },
+              onLoadStop: (controller, url) async {
+                pullToRefreshController?.endRefreshing();
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                  isLoading = false;
+                });
+              },
+              onReceivedError: (controller, request, error) {
+                pullToRefreshController?.endRefreshing();
+              },
+              onProgressChanged: (controller, progress) {
+                if (progress == 100) {
+                  pullToRefreshController?.endRefreshing();
+                }
+                setState(() {
+                  this.progress = progress / 100;
+                  urlController.text = this.url;
+                });
+              },
+              onUpdateVisitedHistory: (controller, url, isReload) {
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                });
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                print(consoleMessage);
+              },
+            ),
+            if (isLoading)
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.white.withOpacity(0.6),
+                  child: Center(
+                    child: LoadingAnimationWidget.threeArchedCircle(
+                      size: 50,
+                      color: const Color(0xffF99D1C),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Stack(
-                children: [
-                  InAppWebView(
-                    key: webViewKey,
-                    initialUrlRequest: URLRequest(
-                      url: WebUri(
-                        'https://shop.yofastpos.com/collections/mrs-pho-house/',
-                      ),
-                    ),
-                    initialUserScripts: UnmodifiableListView<UserScript>([]),
-                    initialSettings: settings,
-                    pullToRefreshController: pullToRefreshController,
-                    onWebViewCreated: (controller) async {
-                      webViewController = controller;
-                      setState(() {
-                        isLoading = true;
-                      });
-                    },
-                    onLoadStart: (controller, url) async {
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                        isLoading = true;
-                      });
-                    },
-                    onPermissionRequest: (controller, request) async {
-                      return PermissionResponse(
-                          resources: request.resources,
-                          action: PermissionResponseAction.GRANT);
-                    },
-                    shouldOverrideUrlLoading:
-                        (controller, navigationAction) async {
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onLoadStop: (controller, url) async {
-                      pullToRefreshController?.endRefreshing();
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                        isLoading = false;
-                      });
-                    },
-                    onReceivedError: (controller, request, error) {
-                      pullToRefreshController?.endRefreshing();
-                    },
-                    onProgressChanged: (controller, progress) {
-                      if (progress == 100) {
-                        pullToRefreshController?.endRefreshing();
-                      }
-                      setState(() {
-                        this.progress = progress / 100;
-                        urlController.text = this.url;
-                      });
-                    },
-                    onUpdateVisitedHistory: (controller, url, isReload) {
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                      });
-                    },
-                    onConsoleMessage: (controller, consoleMessage) {
-                      print(consoleMessage);
-                    },
-                  ),
-                  if (isLoading)
-                    Positioned(
-                      top: 0,
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        color: Colors.white.withOpacity(0.6),
-                        child: Center(
-                          child: LoadingAnimationWidget.threeArchedCircle(
-                            size: 50,
-                            color: const Color(0xffF99D1C),
-                          ),
-                        ),
-                      ),
-                    )
-                ],
-              ),
-            ),
-            Container(
-              color: const Color(0xffFAFAFA),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      webViewController?.loadUrl(
-                        urlRequest: URLRequest(
-                          url: WebUri(
-                            'https://shop.yofastpos.com/collections/mrs-pho-house/',
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      color: Colors.transparent,
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: const Color(0xffFAFAFA),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 30,
                         vertical: 10,
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.grey.shade500,
-                                )),
-                            child: const Icon(
-                              Icons.arrow_back_rounded,
-                              size: 30,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          const Text(
-                            "Quay lại menu",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      child: Image.asset(
+                        'assets/logo.png',
+                        height: 50,
                       ),
                     ),
-                  )
-                ],
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: const Color(0xffFAFAFA),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                            url: WebUri(
+                              'https://shop.yofastpos.com/collections/mrs-pho-house/',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey.shade500,
+                                  )),
+                              child: const Icon(
+                                Icons.arrow_back_rounded,
+                                size: 30,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "Quay lại menu",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             )
           ],
